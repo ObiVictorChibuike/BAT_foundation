@@ -128,7 +128,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     const SizedBox(
                       height: 20,
                     ),
-                    Row(
+                    Row(mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const TextWidget(
                           text: "Already have an account? ",

@@ -1,4 +1,5 @@
 import 'package:batnf/features/authentication/bloc/auth_bloc.dart';
+import 'package:batnf/features/authentication/presentation/controller/auth_controller.dart';
 import 'package:batnf/features/authentication/presentation/widgets/text_field_widget.dart';
 import 'package:batnf/features/home/presentation/widgets/flush_bar.dart';
 import 'package:batnf/router/routes.dart';
@@ -8,6 +9,7 @@ import 'package:batnf/universal.dart/text_widget.dart';
 import 'package:batnf/utilities/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -33,7 +35,8 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isLoading = false;
   bool? isValid = false;
 
-  bool obscureText = false;
+  bool obscureText = true;
+  final _controller = Get.put(AuthController());
   @override
   Widget build(BuildContext context) {
     final authBloc = context.watch<AuthBloc>();
@@ -61,7 +64,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(
                       height: 10,
                     ),
-                    Align(alignment: Alignment.center,
+                    Align(
+                      alignment: Alignment.center,
                       child: Image.asset(
                         "assets/images/logo.png",
                         width: 70,
@@ -111,7 +115,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         GestureDetector(
-                            onTap: ()=> Navigator.pushNamed(context, Routes.resetPassword),
+                            onTap: () => Navigator.pushNamed(
+                                context, Routes.resetPassword),
                             child: const TextWidget(
                               text: "Forgot password?",
                               color: Color.fromARGB(255, 0, 80, 146),
@@ -121,35 +126,49 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(
                       height: 20,
                     ),
-                    BlocConsumer<AuthBloc, AuthState>(
-                      listener: (context, state) {
-                        if (state is AuthStateError) {
-                          FlushBar(context, state.errorMessage == "Login Failed" ? "Login Failed. Please check your username or password" : state.errorMessage,  "Error").showErrorBar;
-                        } else if (state is AuthStateLoginSuccess) {
-                          Navigator.pushNamed(context, Routes.home);
+                    MainButton(
+                      onTap: () {
+                        if (isValid == true){
+                          _controller.login(email: formfieldkey_1.currentState?.value, password: formfieldkey_2.currentState?.value);
                         }
                       },
-                      builder: (context, state) {
-                        return state is AuthStateIsLoading
-                            ? const LoaderWidget()
-                            : MainButton(
-                                onTap: () {
-                                  if (isValid == true) {
-                                    authBloc.add(AuthEventLogin(
-                                        email:
-                                            formfieldkey_1.currentState?.value,
-                                        password: formfieldkey_2
-                                            .currentState?.value));
-                                  }
-                                },
-                                label: "Login",
-                              );
-                      },
+                      label: "Login",
                     ),
+                    // BlocConsumer<AuthBloc, AuthState>(
+                    //   listener: (context, state) {
+                    //     if (state is AuthStateError) {
+                    //       FlushBar(
+                    //               context,
+                    //               state.errorMessage == "Login Failed"
+                    //                   ? "Login Failed. Please check your username or password"
+                    //                   : state.errorMessage,
+                    //               "Error")
+                    //           .showErrorBar;
+                    //     } else if (state is AuthStateLoginSuccess) {
+                    //       Navigator.pushNamed(context, Routes.home);
+                    //     }
+                    //   },
+                    //   builder: (context, state) {
+                    //     return state is AuthStateIsLoading
+                    //         ? const LoaderWidget()
+                    //         : MainButton(
+                    //             onTap: () {
+                    //               if (isValid == true) {
+                    //                 authBloc.add(AuthEventLogin(
+                    //                     email:
+                    //                         formfieldkey_1.currentState?.value,
+                    //                     password: formfieldkey_2
+                    //                         .currentState?.value));
+                    //               }
+                    //             },
+                    //             label: "Login",
+                    //           );
+                    //   },
+                    // ),
                     const SizedBox(
                       height: 20,
                     ),
-                    Row(
+                    Row(mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const TextWidget(
                           text: "Don't have an account? ",

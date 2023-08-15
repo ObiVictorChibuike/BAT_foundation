@@ -67,9 +67,7 @@ class AuthProvider extends AuthInterface {
           headers: {"Content-Type": "application/json"},
         ),
       );
-
       final result = ResponseClass.fromMap(res);
-
       if (result.status != 200) {
         return left(result.message);
       }

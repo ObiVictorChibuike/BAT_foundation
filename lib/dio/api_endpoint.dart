@@ -4,7 +4,7 @@ class RoutesAndPaths {
 
 //auth
   static const String authSignUp = "/api/create";
-  static const String authLogin = "/api/login";
+  static const String authLogin = "/api/login/";
   static const String resetPassword = "/api/forgot_password";
 
   //Projects
@@ -16,4 +16,8 @@ class RoutesAndPaths {
   //News
   static const String allNews = "/api/getAllNews/";
   // static const String resetPassword = "/api/auth/reset-password/";
+
+
+  //HomeFiles
+  static const String allHomeFiles = "/api/getAllHomeFiles/";
 }

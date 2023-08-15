@@ -5,6 +5,7 @@ import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutUsTabPage extends StatefulWidget {
   const AboutUsTabPage({Key? key}) : super(key: key);
@@ -17,6 +18,21 @@ class _AboutUsTabPageState extends State<AboutUsTabPage> {
   final carouselController = CarouselController();
   final pageController = PageController(viewportFraction: 0.7);
   int current = 0;
+  Future<void> launchUrlStart({required String url}) async {
+    if (!await launchUrl(Uri.parse(url),mode: LaunchMode.externalApplication)) {
+      throw 'Could not launch $url';
+    }
+  }
+  final images = [
+    "assets/images/impact1bluelight.png",
+    "assets/images/impact2bluelight.png",
+    "assets/images/impact3bluelight.png",
+    "assets/images/impact4bluelight.png",
+    "assets/images/impact5bluelight.png",
+    "assets/images/impact6bluelight.png",
+    "assets/images/impact7bluelight.png",
+    "assets/images/impact8bluelight.png",
+  ];
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -84,40 +100,17 @@ class _AboutUsTabPageState extends State<AboutUsTabPage> {
                 const SizedBox(
                   width: 14,
                 ),
-                const TextWidget(
-                  color: Color(0xFF083379),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  text: "www.batnf.com",
+                GestureDetector(
+                  onTap: ()=>launchUrlStart(url: "https://www.batnf.com"),
+                  child: const TextWidget(
+                    color: Color(0xFF083379),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    text: "www.batnf.com",
+                  ),
                 ),
               ],
             ),
-          ),
-          const TextWidget(
-            fontSize: 16,
-            height: 1.65,
-            fontWeight: FontWeight.w300,
-            text: 'Follow us across our social media pages for updates',
-          ),
-          const SizedBox(
-            height: 16,
-          ),
-
-          // Rest of your UI code...
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Image.asset("assets/images/facebook.png"),
-              const SizedBox(width: 25),
-              Image.asset("assets/images/twitter.png"),
-              const SizedBox(width: 25),
-              Image.asset("assets/images/insta.png"),
-              const SizedBox(width: 25),
-              Image.asset("assets/images/youtube.png"),
-              const SizedBox(width: 25),
-              Image.asset("assets/images/linkedin.png"),
-              const SizedBox(width: 25),
-            ],
           ),
           const SizedBox(height: 10),
           const Row(
@@ -137,17 +130,18 @@ class _AboutUsTabPageState extends State<AboutUsTabPage> {
               options: CarouselOptions(
                   aspectRatio: 16/9,
                   viewportFraction: 0.6,
-                  height: 120,autoPlayAnimationDuration: const Duration(seconds: 20),
-                  autoPlayInterval: const Duration(seconds: 4),
+                  height: 120, autoPlayAnimationDuration: const Duration(seconds: 10),
+                  autoPlayInterval: const Duration(seconds: 5),
                   enlargeCenterPage: false,
-                  autoPlay: false,
+                  autoPlay: true,
                   onPageChanged: (index, reason) {
                     setState(() {
                       current = index;
                     });
                   }
-              ), items: List.generate(5, (index){
-            return const CarouselCard(height: 120, width: 180);
+              ), items: List.generate(images.length, (index){
+            return CarouselCard(height: 120, width: 180, color: AppColors.white,
+              imageWidget: Image.asset(images[index], fit: BoxFit.cover, ),);
           })
           ),
           const SizedBox(
@@ -155,7 +149,7 @@ class _AboutUsTabPageState extends State<AboutUsTabPage> {
           ),
           AnimatedSmoothIndicator(
             activeIndex: current,
-            count: 5,
+            count: images.length,
             effect: const SwapEffect(
                 spacing: 8.0,
                 radius: 100.0,
@@ -165,6 +159,42 @@ class _AboutUsTabPageState extends State<AboutUsTabPage> {
                 strokeWidth: 1.5,
                 dotColor: Colors.grey,
                 activeDotColor: AppColors.primary),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          const TextWidget(
+            fontSize: 16,
+            height: 1.65,
+            fontWeight: FontWeight.w300,
+            text: 'Follow us across our social media pages for updates',
+          ),
+          const SizedBox(
+            height: 16,
+          ),
+
+          // Rest of your UI code...
+          const SizedBox(height: 16),
+          Align(alignment: Alignment.center,
+            child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                GestureDetector(
+                  onTap: ()=>launchUrlStart(url: "https://www.facebook.com/BATNFoundation/"),
+                    child: Image.asset("assets/images/facebook.png")),
+                GestureDetector(
+                    onTap: ()=>launchUrlStart(url: "https://twitter.com/i/flow/login?redirect_after_login=%2Fbatnfoundation%2F"),
+                    child: Image.asset("assets/images/twitter.png")),
+                GestureDetector(
+                    onTap: ()=>launchUrlStart(url: "https://www.instagram.com/batnfoundation/"),
+                    child: Image.asset("assets/images/insta.png")),
+                GestureDetector(
+                    onTap: ()=>launchUrlStart(url: "https://www.youtube.com/channel/UCektzc9hBeVRLPqEsQuqfzQ"),
+                    child: Image.asset("assets/images/youtube.png")),
+                GestureDetector(
+                    onTap: ()=>launchUrlStart(url: "https://www.linkedin.com/company/batnfoundation/"),
+                    child: Image.asset("assets/images/linkedin.png")),
+              ],
+            ),
           ),
           const SizedBox(
             height: 10,

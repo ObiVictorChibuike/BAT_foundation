@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:batnf/dio/api_endpoint.dart';
 import 'package:batnf/dio/dio_core/dio_client.dart';
+import 'package:batnf/features/home/data/projects/model/home/home_file_model_response.dart';
 import 'package:batnf/features/home/data/projects/model/news/news_details_model.dart';
 import 'package:batnf/features/home/data/projects/model/news/news_response_model.dart';
 import 'package:batnf/features/home/data/projects/respository/media_centre/news.dart';
@@ -37,6 +38,23 @@ class GetNewsImpl extends NewsRepository{
       return Left(e.response?.data["message"]);
     } catch (err){
       return Left(err.toString());
+    }
+  }
+
+  @override
+  Future<Either<String, List<GetAllHomeFileResponseModel>>> allHomeFile() async {
+    try {
+      var response = await _networkProvider.call(path: RoutesAndPaths.allHomeFiles, method: RequestMethod.get);
+      if (response!.statusCode == 200){
+        log(response.data);
+        List<GetAllHomeFileResponseModel> homeFiles =
+        List<GetAllHomeFileResponseModel>.from(json.decode(response.data).map((x) => GetAllHomeFileResponseModel.fromJson(x)));
+        return Right(homeFiles);
+      } else {
+        return Left(response.data['message']);
+      }
+    } on DioException catch (e) {
+      return Left(e.toString());
     }
   }
 

@@ -15,6 +15,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'home_shimmer_loader.dart';
 import 'home_video.dart';
 
@@ -154,8 +155,9 @@ class _HomeDashboardState extends State<HomeDashboard> {
     CategoryButtonModel("About Us"),
     CategoryButtonModel("Projects"),
     CategoryButtonModel("Media Center"),
-    CategoryButtonModel( "Events"),
+    CategoryButtonModel("Events"),
   ];
+
   void callFunction(){
     Future.wait([
       _controller.getAllNews(),
@@ -221,7 +223,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
                     automaticallyImplyLeading: false, backgroundColor: Colors.white, pinned: false,
                     flexibleSpace: FlexibleSpaceBar(
                       background:  Builder(builder: (context) {
-                        final data = controller.projectDateStateView.data!.first;
+                        final data = controller.homeFileDataStateView.data?.first;
                         return Padding(
                             padding: const EdgeInsets.only(left: 15, right: 15),
                             child: ClipRRect(
@@ -237,6 +239,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
                                     autoPlay: false),
                                 items:
                                 [
+                                  data == null ? const Center(child: CupertinoActivityIndicator(),) :
                                   HomeVideo(thumbnailUrl: data.files!.first.thumbnail!, videoUrl: data.files!.first.fileUrl!,),
                                 ],
                               ),)
@@ -246,7 +249,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
                   ),
                   SliverToBoxAdapter(
                     child: Container(
-                      height: 40.0,
+                      height: 42.0,
                       child: Center(
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,  shrinkWrap: true,
@@ -259,10 +262,10 @@ class _HomeDashboardState extends State<HomeDashboard> {
                                 });
                               },
                               child: CategoryButton(title: categoryButtonData[index].buttonTitle ?? "",
-                                color: selectedButtonIndex == index ? AppColors.primary : Colors.transparent, index: index,),
+                                color: selectedButtonIndex == index ? AppColors.primary : Colors.transparent, index: index, ),
                             );
                           }, separatorBuilder: (BuildContext context, int index) {
-                          return SizedBox(width: 20);
+                          return const SizedBox(width: 20);
                         },
                         ),
                       ),
@@ -275,92 +278,110 @@ class _HomeDashboardState extends State<HomeDashboard> {
                     padding: const EdgeInsets.only(left: 15,bottom: 20),
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 15.0, top: 10),
-                            child: GestureDetector(
-                              onTap: ()=>Navigator.pushNamed(context, Routes.projectDetails),
-                              child: Row(
-                                children: [
-                                  Expanded(flex: 4,
-                                    child: Container(
-                                      margin: const EdgeInsets.only(right: 15.0), height: 100,
-                                      child: controller.projectDateStateView.data![index].files![0].fileExt ==
-                                          'image/png' && controller.projectDateStateView.data![index].files![index].fileUrl!.isNotEmpty
-                                          ? ClipRRect(
-                                        borderRadius:
-                                        BorderRadius.circular(10),
-                                        child: CachedNetworkImage(
-                                            errorWidget: (context, url,
-                                                error) =>
+                          return Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(right: 15.0, top: 10),
+                                child: GestureDetector(
+                                  onTap: ()=>Navigator.pushNamed(context, Routes.projectDetails, arguments: controller.projectDateStateView.data![index].projectId),
+                                  child: Row(
+                                    children: [
+                                      Expanded(flex: 4,
+                                        child: Container(
+                                          height: 100, decoration: BoxDecoration(
+                                            image: const DecorationImage(
+                                                opacity: 0.2,
+                                                image: AssetImage(
+                                                  'assets/images/Bc.png',
+                                                ),
+                                                fit: BoxFit.cover),
+                                            color: Colors.transparent,
+                                            borderRadius:
+                                            BorderRadius.circular(18)),
+                                          margin: const EdgeInsets.only(
+                                              bottom: 7.0, top: 7.0, left: 9.0),
+                                          child: controller.projectDateStateView.data![index].files!.first.fileExt ==
+                                              'image' && controller.projectDateStateView.data![index].files!.first.fileUrl!.isNotEmpty
+                                              ? ClipRRect(
+                                            borderRadius:
+                                            BorderRadius.circular(10),
+                                            child: CachedNetworkImage(
+                                                errorWidget: (context, url,
+                                                    error) =>
                                                 const Center(
                                                   child: Icon(
                                                     Icons.error,
                                                     color: Colors.black,
                                                   ),
                                                 ),
-                                            placeholder:
-                                                (context, url) =>
+                                                placeholder:
+                                                    (context, url) =>
                                                 const Center(
                                                   child:
                                                   CupertinoActivityIndicator(),
                                                 ),
-                                            imageUrl: 'https://www.batnf.net/${controller.projectDateStateView.data![index].files![index].fileUrl}',
-                                            fit: BoxFit.cover),
-                                      )
-                                          : ClipRRect(
-                                        borderRadius:
-                                        BorderRadius.circular(10),
-                                        child: CachedNetworkImage(
-                                            errorWidget: (context, url, error) =>
+                                                imageUrl: 'https://www.batnf.net/${controller.projectDateStateView.data![index].files![index].fileUrl}',
+                                                fit: BoxFit.cover),
+                                          )
+                                              : ClipRRect(
+                                            borderRadius:
+                                            BorderRadius.circular(10),
+                                            child: CachedNetworkImage(
+                                                errorWidget: (context, url, error) =>
                                                 const Center(
                                                   child: Icon(Icons.error, color: Colors.black,),),
-                                            placeholder: (context, url) =>
+                                                placeholder: (context, url) =>
                                                 const Center(child: CupertinoActivityIndicator(),),
-                                            imageUrl: 'https://www.batnf.net/${controller.projectDateStateView.data![index].files![0].thumbnail}',
-                                            fit: BoxFit.cover),
+                                                imageUrl: 'https://www.batnf.net/${controller.projectDateStateView.data![index].files!.first.thumbnail}',
+                                                fit: BoxFit.cover),
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                      const SizedBox(width: 15,),
+                                      Expanded(
+                                        flex: 4,
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          // ignore: prefer_const_literals_to_create_immutables
+                                          children: [
+                                            Text(
+                                              controller.projectDateStateView.data![index].projectTitle ?? "",
+                                              style: const TextStyle(
+                                                  color: AppColors.titleBlack,
+                                                  fontStyle: FontStyle.normal,
+                                                  fontFamily: 'Inter',
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold),
+                                              // kNewsSubHeader,
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 2,
+                                              textAlign: TextAlign.left,
+                                            ),
+                                            const SizedBox(height: 6),
+                                            Text(
+                                              controller.projectDateStateView.data![index].projectDescription ?? "",
+                                              style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 14, fontWeight: FontWeight.w400,color: Colors.black),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 4,
+                                              textAlign: TextAlign.start,
+                                            ),
+                                            // const SizedBox(height: 6),
+                                            // Text(
+                                            //   controller.projectDateStateView.data![index].projectStartDate ?? "",
+                                            //   textAlign: TextAlign.left,
+                                            //   style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 14, fontWeight: FontWeight.w400),
+                                            // )
+                                          ],
+                                        ),
+                                      )
+                                    ],
                                   ),
-                                  Expanded(
-                                    flex: 4,
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      // ignore: prefer_const_literals_to_create_immutables
-                                      children: [
-                                        Text(
-                                          controller.projectDateStateView.data![index].projectTitle ?? "",
-                                          style: const TextStyle(
-                                              color: AppColors.titleBlack,
-                                              fontStyle: FontStyle.normal,
-                                              fontFamily: 'Inter',
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold),
-                                          // kNewsSubHeader,
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 2,
-                                          textAlign: TextAlign.left,
-                                        ),
-                                        const SizedBox(height: 6),
-                                        Text(
-                                          controller.projectDateStateView.data![index].projectDescription ?? "",
-                                          style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 14, fontWeight: FontWeight.w400,color: Colors.black),
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 4,
-                                          textAlign: TextAlign.justify,
-                                        ),
-                                        const SizedBox(height: 6),
-                                        Text(
-                                          controller.projectDateStateView.data![index].projectStartDate ?? "",
-                                          textAlign: TextAlign.left,
-                                          style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 14, fontWeight: FontWeight.w400),
-                                        )
-                                      ],
-                                    ),
-                                  )
-                                ],
+                                ),
                               ),
-                            ),
+                              const SizedBox(height: 15,),
+                              const Divider(),
+                            ],
                           );
                         },
                         childCount: controller.projectDateStateView.data!.length > 2 ? 2 : controller.projectDateStateView.data!.length, // 1000 list items
@@ -408,7 +429,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
                                                 style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 14, fontWeight: FontWeight.w400,color: Colors.black),
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 4,
-                                                textAlign: TextAlign.justify,
+                                                textAlign: TextAlign.start,
                                               ),
                                               const SizedBox(height: 6),
                                               Text(
@@ -463,6 +484,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
                                         ),
                                       ],
                                     ),
+                                    const SizedBox(height: 15,),
                                     const Divider()
                                   ],
                                 ),
@@ -512,7 +534,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
                                                 style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 14, fontWeight: FontWeight.w400,color: Colors.black),
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 4,
-                                                textAlign: TextAlign.justify,
+                                                textAlign: TextAlign.start,
                                               ),
                                               const SizedBox(height: 6),
                                               Text(
@@ -567,6 +589,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
                                         ),
                                       ],
                                     ),
+                                    const SizedBox(height: 15,),
                                     const Divider()
                                   ],
                                 ),
@@ -585,9 +608,9 @@ class _HomeDashboardState extends State<HomeDashboard> {
                           if(selectedButtonIndex == 1){
                             homeScreenController.move(1);
                           }else if(selectedButtonIndex == 2){
-                            homeScreenController.move(2);
-                          }else if(selectedButtonIndex == 3){
                             homeScreenController.move(3);
+                          }else if(selectedButtonIndex == 3){
+                            homeScreenController.move(2);
                           }
                         },
                           child: Text("See All", style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primary, decoration: TextDecoration.underline, fontSize: 14),))

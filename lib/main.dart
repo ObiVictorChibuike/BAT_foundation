@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'features/authentication/bloc/auth_bloc.dart';
 import 'features/authentication/data/repository/auth_repository.dart';
+import 'features/authentication/presentation/Screens/profile_details_screen.dart';
 import 'features/home/presentation/screens/home.dart';
 import 'features/onboarding/screens/onboarding_screen.dart';
 
@@ -64,9 +65,11 @@ class MyApp extends StatelessWidget {
           }
         },
         child: GetMaterialApp(
-          theme: ThemeData(textTheme: const TextTheme()),
+          theme: ThemeData(textTheme: const TextTheme(), fontFamily: "Behalal"),
           debugShowCheckedModeBanner: false,
-          home: loggedIn == true ? const HomeScreen() : const OnboardingScreen(),
+          home:
+          //const ProfileDetailsScreen(data: {},),
+          loggedIn == true ? const HomeScreen() : const OnboardingScreen(),
           // initialRoute: "/",
           onGenerateRoute: appRouter.onGenerateRoute,
         ),

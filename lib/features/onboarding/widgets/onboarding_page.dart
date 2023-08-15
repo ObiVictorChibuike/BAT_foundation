@@ -1,6 +1,8 @@
 import 'package:batnf/router/routes.dart';
+import 'package:batnf/universal.dart/main_btn.dart';
 import 'package:batnf/universal.dart/text_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnboardingPageWidget extends StatelessWidget {
   const OnboardingPageWidget({
@@ -8,11 +10,15 @@ class OnboardingPageWidget extends StatelessWidget {
     required this.image,
     required this.title,
     required this.description,
+    required this.pageController,
+    required this.currentPage,
   });
 
   final String image;
   final String title;
   final String description;
+  final PageController pageController;
+  final int currentPage;
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +26,6 @@ class OnboardingPageWidget extends StatelessWidget {
       body: Stack(
         alignment: AlignmentDirectional.bottomStart,
         children: [
-          Container(
-            height: MediaQuery.of(context).size.height,
-          ),
           Column(
             children: [
               Container(
@@ -30,8 +33,7 @@ class OnboardingPageWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage(image),
-                    fit: BoxFit
-                        .fill, // You can choose how the image fits inside the container
+                    fit: BoxFit.cover, // You can choose how the image fits inside the container
                   ),
                 ),
                 child: Row(
@@ -71,8 +73,7 @@ class OnboardingPageWidget extends StatelessWidget {
             ),
             child: Center(
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40),
+                padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 40),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -91,8 +92,34 @@ class OnboardingPageWidget extends StatelessWidget {
                       color: const Color(0xFF6D6265),
                     ),
                     const SizedBox(
-                      height: 30,
+                      height: 35,
                     ),
+                    SmoothPageIndicator(controller: pageController, // PageController
+                        count: 3, effect: const ExpandingDotsEffect(
+                          dotHeight: 8, dotWidth: 8,
+                          activeDotColor: Color.fromARGB(255, 8, 51, 121),
+                        ), // your preferred effect
+                        onDotClicked: (index) {}),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0,
+                      ),
+                      child: MainButton(
+                        label: currentPage == 2 ? "Get Started" : "Next",
+                        onTap: () {
+                          if (currentPage == 2) {
+                            Navigator.pushReplacementNamed(context, Routes.login);
+                            return;
+                          }
+                          pageController.nextPage(
+                              duration: const Duration(milliseconds: 500),
+                              curve: Curves.decelerate);
+                        },
+                      ),
+                    )
                   ],
                 ),
               ),

@@ -1,4 +1,4 @@
-package com.example.batnf
+package com.mobile.BATfoundation
 
 import io.flutter.embedding.android.FlutterActivity
 

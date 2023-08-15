@@ -1,11 +1,41 @@
 import 'package:batnf/universal.dart/text_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ContactUsScreen extends StatelessWidget {
   const ContactUsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    void sendEmail({required String email}) async {
+      final Uri params = Uri(
+        scheme: 'mailto',
+        path: email,
+      );
+      String  url = params.toString();
+      if (await canLaunch(url)) {
+        await launch(url);
+      } else {
+        print( 'Could not launch $url');
+      }
+    }
+    void sendACall({required String phoneNumber}) async {
+      final Uri params = Uri(
+        scheme: 'tel',
+        path: phoneNumber,
+      );
+      String  url = params.toString();
+      if (await canLaunch(url)) {
+        await launch(url);
+      } else {
+        print( 'Could not launch $url');
+      }
+    }
+    Future<void> launchUrlStart({required String url}) async {
+      if (!await launchUrl(Uri.parse(url),mode: LaunchMode.externalApplication)) {
+        throw 'Could not launch $url';
+      }
+    }
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -18,6 +48,7 @@ class ContactUsScreen extends StatelessWidget {
               size: 30,
             ),
           ),
+          centerTitle: true,
           title: const TextWidget(
             text: "Contact Us",
             fontSize: 22,
@@ -44,7 +75,11 @@ class ContactUsScreen extends StatelessWidget {
             const SizedBox(
               height: 15,
             ),
-            const TextWidget(text: "BATNF_Foundation@bat.com"),
+            GestureDetector(
+              onTap: (){
+                sendEmail(email: "BATNF_Foundation@bat.com");
+              },
+                child: const TextWidget(text: "BATNF_Foundation@bat.com")),
             const SizedBox(
               height: 30,
             ),
@@ -64,8 +99,7 @@ class ContactUsScreen extends StatelessWidget {
               height: 15,
             ),
             const TextWidget(
-                text:
-                    "BAT Nigeria Foundation, 2, Olumegbon Street Ikoyi, Lagos State, Nigeria."),
+                text: "BAT Nigeria Foundation, 2, Olumegbon Street Ikoyi, Lagos State, Nigeria."),
             const SizedBox(
               height: 30,
             ),
@@ -84,11 +118,19 @@ class ContactUsScreen extends StatelessWidget {
             const SizedBox(
               height: 15,
             ),
-            const TextWidget(text: "(+234) 7046002033"),
+            GestureDetector(
+              onTap: (){
+                sendACall(phoneNumber: "+2347046002033");
+              },
+                child: const TextWidget(text: "(+234) 7046002033")),
             const SizedBox(
               height: 10,
             ),
-            const TextWidget(text: "(+234) 7046002000"),
+            GestureDetector(
+                onTap: (){
+                  sendACall(phoneNumber: "+2347046002000");
+                },
+                child: const TextWidget(text: "(+234) 7046002000")),
             const SizedBox(
               height: 30,
             ),
@@ -97,18 +139,23 @@ class ContactUsScreen extends StatelessWidget {
             const SizedBox(
               height: 30,
             ),
-            Row(
+            Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Image.asset("assets/images/facebook.png"),
-                const SizedBox(width: 25),
-                Image.asset("assets/images/twitter.png"),
-                const SizedBox(width: 25),
-                Image.asset("assets/images/insta.png"),
-                const SizedBox(width: 25),
-                Image.asset("assets/images/youtube.png"),
-                const SizedBox(width: 25),
-                Image.asset("assets/images/linkedin.png"),
-                const SizedBox(width: 25),
+                GestureDetector(
+                    onTap: ()=>launchUrlStart(url: "https://www.facebook.com/BATNFoundation/"),
+                    child: Image.asset("assets/images/facebook.png")),
+                GestureDetector(
+                    onTap: ()=>launchUrlStart(url: "https://twitter.com/i/flow/login?redirect_after_login=%2Fbatnfoundation%2F"),
+                    child: Image.asset("assets/images/twitter.png")),
+                GestureDetector(
+                    onTap: ()=>launchUrlStart(url: "https://www.instagram.com/batnfoundation/"),
+                    child: Image.asset("assets/images/insta.png")),
+                GestureDetector(
+                    onTap: ()=>launchUrlStart(url: "https://www.youtube.com/channel/UCektzc9hBeVRLPqEsQuqfzQ"),
+                    child: Image.asset("assets/images/youtube.png")),
+                GestureDetector(
+                    onTap: ()=>launchUrlStart(url: "https://www.linkedin.com/company/batnfoundation/"),
+                    child: Image.asset("assets/images/linkedin.png")),
               ],
             ),
           ],

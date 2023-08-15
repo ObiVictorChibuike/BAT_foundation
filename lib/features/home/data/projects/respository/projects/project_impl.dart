@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:batnf/dio/api_endpoint.dart';
 import 'package:batnf/dio/dio_core/dio_client.dart';
+import 'package:batnf/features/home/data/projects/model/home/home_file_model_response.dart';
 import 'package:batnf/features/home/data/projects/model/projects/project_details_model.dart';
 import 'package:batnf/features/home/data/projects/model/projects/projects_response_model.dart';
 import 'package:batnf/features/home/data/projects/respository/projects/projects.dart';

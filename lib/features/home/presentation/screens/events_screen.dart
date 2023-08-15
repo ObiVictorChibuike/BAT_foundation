@@ -1,6 +1,7 @@
 import 'package:batnf/constants.dart/app_colors.dart';
 import 'package:batnf/core/state/view_state.dart';
 import 'package:batnf/features/home/data/projects/controller/controller.dart';
+import 'package:batnf/features/home/presentation/widgets/customer_animation_bar/dimensions.dart';
 import 'package:batnf/features/home/presentation/widgets/customer_animation_bar/search_bar.dart';
 import 'package:batnf/features/home/presentation/widgets/error_widget.dart';
 import 'package:batnf/features/home/presentation/widgets/project_shimmer_loader.dart';
@@ -50,7 +51,7 @@ class _EventsScreenState extends State<EventsScreen> {
                 actions: [
                   IconButton(onPressed: () async {
                     query.text = "";
-                    await _controller.getAllEvents();
+                    await _controller.repopulateAllEventsList();
                   }, icon: Column(
                     children: [
                       const Icon(Icons.clear, color: AppColors.primary, size: 25,),
@@ -76,20 +77,33 @@ class _EventsScreenState extends State<EventsScreen> {
               backgroundColor: Colors.white,
               appBar: AppBar(
                 elevation: 0.0, automaticallyImplyLeading: false,
-                backgroundColor: Colors.white,
-                title: Row(
-                  children: [
-                    Image.asset(
-                      "assets/images/logo.png",
-                      width: 50,
-                    ),
-                    const TextWidget(
-                      text: "Events",
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ],
+                backgroundColor: Colors.white, centerTitle: true,
+                leading: Padding(
+                  padding: const EdgeInsets.only(left: 18.0),
+                  child: Image.asset(
+                    "assets/images/logo.png",
+                    width: 50,
+                  ),
                 ),
+                title: const TextWidget(
+                  text: "Events",
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+                actions:  [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 15.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, Routes.menu);
+                      },
+                      child: Transform.scale(
+                        scale: 1.2,
+                        child: Image.asset("assets/images/menu.png", height: 30, width: 30,),
+                      ),
+                    ),
+                  )
+                ],
               ),
               body: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15.0),
@@ -102,6 +116,7 @@ class _EventsScreenState extends State<EventsScreen> {
                       children: [
                         Expanded(
                           child: SearchBarAnimation(
+                            durationInMilliSeconds: Dimensions.t500,
                             enableBoxShadow: false, enableBoxBorder: true,
                             hintText: "Search here", enableButtonShadow: false,
                             buttonShadowColour: Colors.transparent,
@@ -110,14 +125,23 @@ class _EventsScreenState extends State<EventsScreen> {
                             buttonBorderColour: Colors.black45,
                             onCollapseComplete: () async {
                               query.text = "";
-                              _controller.getAllEvents();
+                              _controller.repopulateAllEventsList();
                             },
                             onChanged: (String value) {
-                              final list =  controller.eventDateStateView.data!.where((element){
-                                final title = element.eventName?.toUpperCase();
-                                final queryTitle = query.text.toUpperCase();
-                                return title!.contains(queryTitle);
+                              final list = controller.eventDateStateView.data!.where((element) {
+                                if (element.eventName!.toLowerCase().contains(query.text.toLowerCase())){
+                                  return true;
+                                } else if (element.eventDesc!.toLowerCase().contains(query.text.toLowerCase())) {
+                                  return true;
+                                } else {
+                                  return false;
+                                }
                               }).toList();
+                              // final list =  controller.eventDateStateView.data!.where((element){
+                              //   final title = element.eventName?.toUpperCase();
+                              //   final queryTitle = query.text.toUpperCase();
+                              //   return title!.contains(queryTitle);
+                              // }).toList();
                               setState(() {
                                 controller.eventDateStateView.data = list;
                               });
@@ -128,7 +152,6 @@ class _EventsScreenState extends State<EventsScreen> {
                       ],
                     ),
                     const Divider(),
-                    const SizedBox(height: 10,),
                     ...List.generate(controller.eventDateStateView.data!.length, (index){
                       return Padding(
                         padding: const EdgeInsets.only(top: 10),
@@ -164,7 +187,7 @@ class _EventsScreenState extends State<EventsScreen> {
                                           style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 14, fontWeight: FontWeight.w400,color: Colors.black),
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 4,
-                                          textAlign: TextAlign.justify,
+                                          textAlign: TextAlign.start,
                                         ),
                                         const SizedBox(height: 6),
                                         Text(
@@ -219,6 +242,7 @@ class _EventsScreenState extends State<EventsScreen> {
                                   ),
                                 ],
                               ),
+                              const SizedBox(height: 15,),
                               const Divider()
                             ],
                           ),

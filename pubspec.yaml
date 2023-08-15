@@ -49,6 +49,7 @@ dependencies:
   carousel_slider: ^4.1.1
   path_provider: ^2.0.15
   flutter_native_splash: ^2.3.1
+  flutter_rating_bar: ^4.0.1
   shared_preferences: ^2.1.1
   searchfield: ^0.8.3
   simple_gradient_text: ^1.2.4
@@ -80,7 +81,9 @@ dependencies:
   shimmer: ^2.0.0
   jiffy: ^5.0.0
   clean_dialog: ^0.0.16
-  another_flushbar: 1.10.28
+  another_flushbar: ^1.12.30
+  url_launcher: ^6.1.10
+  fluttertoast: ^8.2.2
 
 dev_dependencies:
   flutter_test:
@@ -114,6 +117,7 @@ flutter:
   assets:
     - assets/images/
     - assets/lottie/
+    - assets/fonts/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -126,35 +130,10 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-#  fonts:
-#    - family: Inter
-#      fonts:
-#        - asset: assets/fonts/Inter-Black.ttf
-#          weight: 900
-#
-#        - asset: assets/fonts/Inter-Bold.ttf
-#          weight: 700
-#
-#        - asset: assets/fonts/Inter-ExtraBold.ttf
-#          weight: 800
-#
-#        - asset: assets/fonts/Inter-ExtraLight.ttf
-#          weight: 200
-#
-#        - asset: assets/fonts/Inter-Light.ttf
-#          weight: 300
-#
-#        - asset: assets/fonts/Inter-Regular.ttf
-#          weight: 400
-#
-#        - asset: assets/fonts/Inter-Medium.ttf
-#          weight: 500
-#
-#        - asset: assets/fonts/Inter-SemiBold.ttf
-#          weight: 600
-#
-#        - asset: assets/fonts/Inter-Thin.ttf
-#          weight: 100
-  #
+  fonts:
+    - family: Behalal
+      fonts:
+        - asset: assets/fonts/Behalal.ttf
+
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

@@ -23,30 +23,33 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     super.initState();
   }
 
-  // Dummy data for onboarding pages (you can replace this with your content)
-  final List<Widget> _pages = [
-    const OnboardingPageWidget(
-      image: "assets/images/events.jpg",
-      title: "Attend our events",
-      description:
-          "Keep up to date with our events as they happen.Don't forget to register so that you can be part of our stories as we continue to make a difference.",
-    ),
-    const OnboardingPageWidget(
-      image: "assets/images/news.jpg",
-      title: "News Updates",
-      description:
-          "Get live updates on the foundation's activities, press statements, news articles, videos and photos.",
-    ),
-    const OnboardingPageWidget(
-      image: "assets/images/projects.jpg",
-      title: "Explore our projects",
-      description:
-          "Our agricultural initiatives are aimed at empowering small holder farmers to improve their productivity and help build their capacity to establish viable agricultural enterprises. ",
-    ),
-  ];
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> _pages = [
+      OnboardingPageWidget(
+        image: "assets/images/onboarding1.png",
+        title: "Attend our events",
+        description: "Keep up to date with our events as they happen. Don't forget to register so that you can be part of our stories as we continue to make a difference.",
+        pageController: pageController,
+        currentPage: _currentPage,
+      ),
+       OnboardingPageWidget(
+        image: "assets/images/onboarding3.png",
+        title: "News Updates",
+        description: "Get live updates on the foundation's activities, press statements, news articles, videos and photos.",
+        pageController: pageController,
+        currentPage: _currentPage,
+      ),
+       OnboardingPageWidget(
+        image: "assets/images/onboarding4.png",
+        title: "Explore our projects",
+        description: "Our agricultural initiatives are aimed at empowering small holder farmers to "
+            "improve their productivity and help build their capacity to establish viable agricultural enterprises. ",
+         pageController: pageController,
+         currentPage: _currentPage,
+      ),
+    ];
     return Scaffold(
       body: Stack(
         children: [
@@ -62,43 +65,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               return _pages[index];
             },
           ),
-          Positioned(
-              bottom: 50,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: SmoothPageIndicator(
-                    controller: pageController, // PageController
-                    count: 3,
-                    effect: const ExpandingDotsEffect(
-                      dotHeight: 8,
-                      dotWidth: 8,
-                      activeDotColor: Color.fromARGB(255, 8, 51, 121),
-                    ), // your preferred effect
-                    onDotClicked: (index) {}),
-              )),
-          Positioned(
-            bottom: 80,
-            left: 0,
-            right: 0,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20.0,
-              ),
-              child: MainButton(
-                label: _currentPage == 2 ? "Get Started" : "Next",
-                onTap: () {
-                  if (_currentPage == 2) {
-                    Navigator.pushReplacementNamed(context, Routes.login);
-                    return;
-                  }
-                  pageController.nextPage(
-                      duration: const Duration(milliseconds: 500),
-                      curve: Curves.decelerate);
-                },
-              ),
-            ),
-          )
         ],
       ),
     );

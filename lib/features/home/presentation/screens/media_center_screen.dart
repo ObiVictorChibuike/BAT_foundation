@@ -1,6 +1,7 @@
 import 'package:batnf/constants.dart/app_colors.dart';
 import 'package:batnf/core/state/view_state.dart';
 import 'package:batnf/features/home/data/projects/controller/controller.dart';
+import 'package:batnf/features/home/presentation/widgets/customer_animation_bar/dimensions.dart';
 import 'package:batnf/features/home/presentation/widgets/customer_animation_bar/search_bar.dart';
 import 'package:batnf/features/home/presentation/widgets/project_shimmer_loader.dart';
 import 'package:batnf/router/routes.dart';
@@ -52,7 +53,7 @@ class _MediaCenterScreenState extends State<MediaCenterScreen> {
                 actions: [
                   IconButton(onPressed: () async {
                     query.text = "";
-                    await homeController.getAllNews();
+                    await homeController.repopulateAllNewsList();
                   }, icon: Column(
                     children: [
                       const Icon(Icons.clear, color: AppColors.primary, size: 25,),
@@ -78,20 +79,33 @@ class _MediaCenterScreenState extends State<MediaCenterScreen> {
               backgroundColor: Colors.white,
               appBar: AppBar(
                 elevation: 0.0, automaticallyImplyLeading: false,
-                backgroundColor: Colors.white,
-                title: Row(
-                  children: [
-                    Image.asset(
-                      "assets/images/logo.png",
-                      width: 50,
-                    ),
-                    const TextWidget(
-                      text: "Media Center",
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ],
+                backgroundColor: Colors.white, centerTitle: true,
+                leading: Padding(
+                  padding: const EdgeInsets.only(left: 18.0),
+                  child: Image.asset(
+                    "assets/images/logo.png",
+                    width: 50,
+                  ),
                 ),
+                title: const TextWidget(
+                  text: "Media Center",
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+                actions:  [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 15.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, Routes.menu);
+                      },
+                      child: Transform.scale(
+                        scale: 1.2,
+                        child: Image.asset("assets/images/menu.png", height: 30, width: 30,),
+                      ),
+                    ),
+                  )
+                ],
               ),
               body: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15.0),
@@ -104,6 +118,7 @@ class _MediaCenterScreenState extends State<MediaCenterScreen> {
                       children: [
                         Expanded(
                           child: SearchBarAnimation(
+                            durationInMilliSeconds: Dimensions.t500,
                             enableBoxShadow: false, enableBoxBorder: true,
                             hintText: "Search here", enableButtonShadow: false,
                             buttonShadowColour: Colors.transparent,
@@ -112,13 +127,17 @@ class _MediaCenterScreenState extends State<MediaCenterScreen> {
                             buttonBorderColour: Colors.black45,
                               onCollapseComplete: () async {
                                 query.text = "";
-                                await homeController.getAllNews();
+                                await homeController.repopulateAllNewsList();
                               },
                               onChanged: (String value) {
-                                final list =  controller.newsDateStateView.data!.where((element){
-                                  final title = element.title?.toUpperCase();
-                                  final queryTitle = query.text.toUpperCase();
-                                  return title!.contains(queryTitle);
+                                final list = controller.newsDateStateView.data!.where((element) {
+                                  if (element.title!.toLowerCase().contains(query.text.toLowerCase())){
+                                    return true;
+                                  } else if (element.information!.toLowerCase().contains(query.text.toLowerCase())) {
+                                    return true;
+                                  } else {
+                                    return false;
+                                  }
                                 }).toList();
                                 setState(() {
                                   controller.newsDateStateView.data = list;
@@ -130,7 +149,6 @@ class _MediaCenterScreenState extends State<MediaCenterScreen> {
                       ],
                     ),
                     const Divider(),
-                    const SizedBox(height: 10,),
                     ...List.generate(controller.newsDateStateView.data!.length, (index){
                       return Padding(
                         padding: const EdgeInsets.only(top: 10),
@@ -166,7 +184,7 @@ class _MediaCenterScreenState extends State<MediaCenterScreen> {
                                           style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 14, fontWeight: FontWeight.w400,color: Colors.black),
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 4,
-                                          textAlign: TextAlign.justify,
+                                          textAlign: TextAlign.start,
                                         ),
                                         const SizedBox(height: 6),
                                         Text(
@@ -221,6 +239,7 @@ class _MediaCenterScreenState extends State<MediaCenterScreen> {
                                   ),
                                 ],
                               ),
+                              const SizedBox(height: 15,),
                               const Divider()
                             ],
                           ),

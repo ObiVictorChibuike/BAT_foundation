@@ -26,7 +26,7 @@ class TextWidget extends StatelessWidget {
           color: color,
           fontWeight: fontWeight,
           fontSize: fontSize,
-          fontFamily: "neueplak"),
+          fontFamily: "Behalal"),
     );
   }
 }

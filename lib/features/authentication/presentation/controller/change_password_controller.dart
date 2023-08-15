@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:batnf/core/state/view_state.dart';
 import 'package:batnf/dio/dio_core/dio_client.dart';
 import 'package:batnf/features/authentication/presentation/repository/change_password.dart';
@@ -52,19 +53,17 @@ class ChangePasswordController extends GetxController{
       });
       var response = await NetworkProvider().call(path: "/api/change_password", method: RequestMethod.post, body: postBody);
       final data = SuccessResponseModel.fromJson(json.decode(response?.data));
-      // if(response!.data["status"].toString() == "200"){
+      if(data.status.toString() == "200"){
       WidgetsBinding.instance.addPostFrameCallback((_){
         Navigator.pop(Get.context!);
         FlushBar(Get.context!, data.message ?? "", "Success").showSuccessBar;
       });
-      // }else{
-      //   WidgetsBinding.instance.addPostFrameCallback((_){
-      //     Navigator.of(Get.context!).pop();
-      //     InfoSnackBar.showErrorSnackBar(
-      //         Get.context!, "Request Error: ${response!.data["message"] ?? "Please check your credentials and resend"}");
-      //   });
-      //
-      // }
+      }else{
+        WidgetsBinding.instance.addPostFrameCallback((_){
+          Navigator.of(Get.context!).pop();
+          FlushBar(Get.context!, data.message ?? "", "Error").showErrorBar;
+        });
+      }
     } on DioException catch (e) {
       Navigator.of(Get.context!).pop();
       FlushBar(Get.context!, e.response?.data["message"] ?? "", "Error").showErrorBar;

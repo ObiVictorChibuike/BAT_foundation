@@ -1,3 +1,4 @@
+import 'package:batnf/constants.dart/app_colors.dart';
 import 'package:batnf/constants.dart/string.dart';
 import 'package:flutter/material.dart';
 
@@ -6,9 +7,12 @@ class CarouselCard extends StatelessWidget {
     Key? key,
     this.width,
     this.height,
+    this.imageWidget, this.color,
   }) : super(key: key);
   final double? width;
   final double? height;
+  final Widget? imageWidget;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -18,15 +22,16 @@ class CarouselCard extends StatelessWidget {
         width: width,
         height: height,
         decoration: ShapeDecoration(
+          color: AppColors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(color: Colors.white, width: 4),
+            side: BorderSide(color: color ?? Colors.transparent, width: 1),
           ),
         ),
         // padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 35),
         child: Center(child: ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: Image.network(imagePlaceHolder, fit: BoxFit.cover,height: 120, width: 180))),
+            child: imageWidget ?? Image.network(imagePlaceHolder, fit: BoxFit.cover,height: 120, width: 180))),
         // Column(
         //   crossAxisAlignment: CrossAxisAlignment.center,
         //   children: [

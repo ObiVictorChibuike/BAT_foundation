@@ -25,4 +25,5 @@ class Dimensions {
   static const int t200 = 200;
   static const int t700 = 700;
   static const int t1000 = 1000;
+  static const int t500 = 1000;
 }

@@ -91,6 +91,7 @@ class AuthorizationInterceptor extends Interceptor {
     options.headers['Content-Type'] = 'multipart/form-data';
     options.headers["Accept"] = "application/json";
     options.headers["Content-Type"] = "application/json";
+    options.headers["Cookie"] =  "ci_session=3nii9fgc8mr07noklstgcm00il8asgv5; remember_code=3e6917aba9e75aa6ebb390626a005d0757fab1ac.5027ffb6d85d7e85977fe3ed709ea8e433d0b1c4b7577343133706ae760d7303e1a7346cc891ceb4e9b9e8e944f458e59a48238d10a6ec36746647c04906f144";
     super.onRequest(options, handler);
   }
 }

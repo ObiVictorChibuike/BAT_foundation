@@ -5,10 +5,13 @@ import 'package:batnf/features/home/presentation/widgets/carousel_cards.dart';
 import 'package:batnf/features/home/presentation/widgets/error_widget.dart';
 import 'package:batnf/features/home/presentation/widgets/home_video.dart';
 import 'package:batnf/features/home/presentation/widgets/loading_widget.dart';
+import 'package:batnf/features/home/presentation/widgets/video_thumbnail.dart';
 import 'package:batnf/universal.dart/text_widget.dart';
-import 'package:batnf/utilities/custom_date.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -25,6 +28,12 @@ class _ProjectDetailsState extends State<ProjectDetails> {
   final carouselController = CarouselController();
   final pageController = PageController(viewportFraction: 0.7);
   int current = 0;
+  final images = [
+    "assets/images/image1.jpg",
+    "assets/images/image2.jpg",
+    "assets/images/image3.jpg",
+    "assets/images/image4.jpg",
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,29 +60,109 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                   physics: const BouncingScrollPhysics(),
                   slivers: <Widget>[
                     SliverAppBar(
-                      expandedHeight: MediaQuery.of(context).size.height / 3.6, floating: false,
+                      expandedHeight: MediaQuery.of(context).size.height / 3.2, floating: false,
                       automaticallyImplyLeading: false, backgroundColor: Colors.white, pinned: false,
                       flexibleSpace: FlexibleSpaceBar(
                         background:  Builder(builder: (context) {
                           final data = controller.projectDetailsDateStateView.data!;
-                          return Padding(
-                              padding: const EdgeInsets.only(left: 15, right: 15),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
-                                child: CarouselSlider(
-                                  options: CarouselOptions(
-                                      height: 180,
-                                      scrollDirection: Axis.horizontal,
-                                      padEnds: true,
-                                      enableInfiniteScroll: false,
-                                      autoPlayCurve: Curves.easeInQuint,
-                                      viewportFraction: 1,
-                                      autoPlay: false),
-                                  items:
-                                  [
-                                    HomeVideo(thumbnailUrl: data.files!.first.thumbnail!, videoUrl: data.files!.first.fileUrl!,),
+                          return Container(
+                            margin: const EdgeInsets.only(left: 20, right: 20),
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 10,),
+                                Container(
+                                  decoration: BoxDecoration(
+                                      image: const DecorationImage(
+                                          opacity: 0.2,
+                                          image: AssetImage(
+                                            'assets/images/Bc.png',
+                                          ),
+                                          fit: BoxFit.cover),
+                                      color: Colors.transparent,
+                                      borderRadius: BorderRadius.circular(18)),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(5),
+                                    child: CarouselSlider(
+                                        carouselController: carouselController,
+                                        options: CarouselOptions(
+                                          padEnds: false,
+                                          autoPlayInterval: Duration(seconds: 10),
+                                          height: 180,
+                                          viewportFraction: 1.0,
+                                          enableInfiniteScroll: false,
+                                          // autoPlay: true
+                                        ),
+                                        items: data.files!
+                                            .map((inprogressFile) {
+                                          if (data.files!.isEmpty ||
+                                              inprogressFile.fileExt!.isEmpty ||
+                                              inprogressFile.fileUrl!.isEmpty ||
+                                              inprogressFile.thumbnail!.isEmpty) {
+                                            return Container(
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                    BorderRadius.circular(18)),
+                                                child: const CupertinoActivityIndicator());
+                                            // CachedNetworkImage(
+                                            //     placeholder: (context, url) => Center(
+                                            //         child: CircularProgressIndicator()),
+                                            //     imageUrl:
+                                            //         'https://i1.wp.com/nnn.ng/wp-content/uploads/2021/03/news-today.jpg',
+                                            //     fit: BoxFit.cover);
+                                            // Image.asset('assets/logo.png', fit: BoxFit.cover);
+                                          } else if (inprogressFile.fileExt == '') {
+                                            return CachedNetworkImage(
+                                                errorWidget: (context, url, error) =>
+                                                    const Center(
+                                                        child: Text(
+                                                            'No Image/Video Available')),
+                                                placeholder: (context, url) => const Center(
+                                                    child: CupertinoActivityIndicator()),
+                                                imageUrl:
+                                                'https://www.batnf.net/${inprogressFile.thumbnail}',
+                                                fit: BoxFit.cover);
+                                          } else if (inprogressFile.fileExt == 'image' &&
+                                              inprogressFile.thumbnail!.isNotEmpty) {
+                                            return CachedNetworkImage(
+                                                errorWidget: (context, url, error) =>
+                                                    const Center(
+                                                        child: Text(
+                                                            'No Image/Video Available')),
+                                                placeholder: (context, url) => Center(
+                                                    child: CupertinoActivityIndicator()),
+                                                imageUrl:
+                                                'https://www.batnf.net/${inprogressFile.fileUrl}',
+                                                fit: BoxFit.cover);
+                                          }
+                                          return Videos(
+                                            thumbnailUrl: inprogressFile.thumbnail!,
+                                            videoUrl: inprogressFile.fileUrl!,
+                                          );
+                                        }).toList()),
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    data.files!.length <= 1 ? const SizedBox(): const Text('previous'),
+                                    data.files!.length <= 1 ? const SizedBox():
+                                    MaterialButton(
+                                      onPressed: () => carouselController.previousPage(
+                                          duration: const Duration(milliseconds: 300),
+                                          curve: Curves.linear),
+                                      child: const Icon(FontAwesomeIcons.arrowLeft, size: 15,),
+                                    ),
+                                    MaterialButton(
+                                      onPressed: () => carouselController.nextPage(
+                                          duration: const Duration(milliseconds: 300),
+                                          curve: Curves.linear),
+                                      child: const Icon(FontAwesomeIcons.arrowRight, size: 15,),
+                                    ),
+                                    const Text('Next')
                                   ],
-                                ),)
+                                )
+                              ],
+                            ),
                           );
                         }),
                       ),
@@ -101,68 +190,68 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                             const SizedBox(
                               height: 10,
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                SizedBox(
-                                  child: Row(
-                                    children: [
-                                      Image.asset("assets/images/start_icon.png"),
-                                      const SizedBox(
-                                        width: 5,
-                                      ),
-                                      const TextWidget(
-                                        text: "Start date",
-                                        fontSize: 12,
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(
-                                  child: Row(
-                                    children: [
-                                      const TextWidget(
-                                        text: "End Date",
-                                        fontSize: 12,
-                                      ),
-                                      const SizedBox(
-                                        width: 5,
-                                      ),
-                                      Image.asset("assets/images/end_icon.png"),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                 TextWidget(
-                                  text: CustomDate.slash(data.projectStartDate.toString()),
-                                  fontSize: 12,
-                                ),
-                                Image.asset("assets/images/arrow.png"),
-                                TextWidget(
-                                  text: CustomDate.slash(data.projectEndDate.toString()),
-                                  fontSize: 12,
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                             Row(
-                              children: [
-                                const Icon(
-                                  Icons.location_on,
-                                  size: 20,
-                                ),
-                                TextWidget(
-                                  text: data.projectLocation ?? "",
-                                  fontSize: 14,
-                                )
-                              ],
-                            ),
+                            // Row(
+                            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            //   children: [
+                            //     SizedBox(
+                            //       child: Row(
+                            //         children: [
+                            //           Image.asset("assets/images/start_icon.png"),
+                            //           const SizedBox(
+                            //             width: 5,
+                            //           ),
+                            //           const TextWidget(
+                            //             text: "Start date",
+                            //             fontSize: 12,
+                            //           )
+                            //         ],
+                            //       ),
+                            //     ),
+                            //     SizedBox(
+                            //       child: Row(
+                            //         children: [
+                            //           const TextWidget(
+                            //             text: "End Date",
+                            //             fontSize: 12,
+                            //           ),
+                            //           const SizedBox(
+                            //             width: 5,
+                            //           ),
+                            //           Image.asset("assets/images/end_icon.png"),
+                            //         ],
+                            //       ),
+                            //     )
+                            //   ],
+                            // ),
+                            // Row(
+                            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            //   children: [
+                            //      TextWidget(
+                            //       text: CustomDate.slash(data.projectStartDate.toString()),
+                            //       fontSize: 12,
+                            //     ),
+                            //     Image.asset("assets/images/arrow.png"),
+                            //     TextWidget(
+                            //       text: CustomDate.slash(data.projectEndDate.toString()),
+                            //       fontSize: 12,
+                            //     ),
+                            //   ],
+                            // ),
+                            // const SizedBox(
+                            //   height: 20,
+                            // ),
+                            //  Row(
+                            //   children: [
+                            //     const Icon(
+                            //       Icons.location_on,
+                            //       size: 20,
+                            //     ),
+                            //     TextWidget(
+                            //       text: data.projectLocation ?? "",
+                            //       fontSize: 14,
+                            //     )
+                            //   ],
+                            // ),
                             const SizedBox(
                               height: 20,
                             ),
@@ -176,12 +265,14 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                             const SizedBox(
                               height: 10,
                             ),
+                            data.files!.isNotEmpty ?
                             CarouselSlider(
-                              carouselController: carouselController,
+                                carouselController: carouselController,
                                 options: CarouselOptions(
                                     aspectRatio: 16/9,
                                     viewportFraction: 0.6,
-                                    height: 120,autoPlayAnimationDuration: const Duration(seconds: 20),
+                                    // enableInfiniteScroll: false,
+                                    height: 120, autoPlayAnimationDuration: const Duration(seconds: 20),
                                     autoPlayInterval: const Duration(seconds: 4),
                                     enlargeCenterPage: false,
                                     autoPlay: false,
@@ -190,16 +281,25 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                                         current = index;
                                       });
                                     }
-                                ), items: List.generate(5, (index){
-                                  return const CarouselCard(height: 120, width: 180);
-                            })
-                            ),
-                            const SizedBox(
+                                ), items: data.files?.map((e) => CarouselCard(
+                              imageWidget: ClipRRect(
+                                borderRadius:
+                                BorderRadius.circular(10),
+                                child: CachedNetworkImage(
+                                    errorWidget: (context, url, error) =>
+                                    const Center(child: Icon(Icons.error, color: Colors.black,),),
+                                    placeholder: (context, url) =>
+                                    const Center(child: CupertinoActivityIndicator(),),
+                                    imageUrl: 'https://www.batnf.net/${e.thumbnail}',
+                                    fit: BoxFit.cover),
+                              ),)).toList()
+                            ) : const SizedBox(),
+                            data.files!.isNotEmpty ? const SizedBox(
                               height: 10,
-                            ),
-                            AnimatedSmoothIndicator(
+                            ) : const SizedBox(),
+                            data.files!.isNotEmpty ? AnimatedSmoothIndicator(
                               activeIndex: current,
-                              count: 5,
+                              count: data.files!.length,
                               effect: const SwapEffect(
                                   spacing: 8.0,
                                   radius: 100.0,
@@ -209,7 +309,7 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                                   strokeWidth: 1.5,
                                   dotColor: Colors.grey,
                                   activeDotColor: AppColors.primary),
-                            ),
+                            ) : const SizedBox(),
                           ],
                         ),
                       ),
